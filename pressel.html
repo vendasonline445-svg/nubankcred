@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processamento Concluído</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f7ff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+
+        .badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            background-color: #f0e8ff;
+            color: #6b21a8;
+        }
+
+        .badge.status {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+        }
+
+        /* Main Card */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .stat-description {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .progress-percentage {
+            font-size: 16px;
+            font-weight: 600;
+            color: #7c3aed;
+        }
+
+        .progress-bars {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background-color: #7c3aed;
+            border-radius: 4px;
+            animation: fillBar 1s ease-out forwards;
+        }
+
+        @keyframes fillBar {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .progress-status {
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
+        /* Steps List */
+        .steps-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        .steps-list {
+            list-style: none;
+        }
+
+        .step {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .step:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .step-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #7c3aed;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 4px;
+        }
+
+        .step-content h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .step-content p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Button */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #7c3aed;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #6d28d9;
+            box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-text {
+            color: #7c3aed;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card h2 {
+                font-size: 18px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="badge">Sessão: 99FFEE</div>
+            <div class="badge status">Concluído</div>
+        </div>
+
+        <!-- Main Message -->
+        <div class="card">
+            <h2>Concluído</h2>
+            <p>Você pode continuar.</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat">
+                <div class="stat-label">Etapa</div>
+                <div class="stat-value">4/4</div>
+                <div class="stat-description">Pronto</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Progresso</div>
+                <div class="stat-value">100%</div>
+                <div class="stat-description">Atualização automática</div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <h3>Tudo pronto</h3>
+                <span class="progress-percentage">100%</span>
+            </div>
+            <div class="progress-bars">
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+                <div class="progress-bar"></div>
+            </div>
+            <div class="progress-info">
+                <span class="progress-status">Status: concluído</span>
+                <span>Concluído</span>
+            </div>
+            <p style="margin-top: 12px; font-size: 13px; color: #666;">Tudo certo. Toque em Continuar.</p>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps-section">
+            <ul class="steps-list">
+                <li class="step">
+                    <div class="step-dot"></div>
+                    <div class="step-content">
+                        <h4>Validando dados</h4>
+                        <p>Checando informações básicas.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <div class="step-dot"></div>
+                    <div class="step-content">
+                        <h4>Conferindo detalhes</h4>
+                        <p>Verificando consistência dos dados.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <div class="step-dot"></div>
+                    <div class="step-content">
+                        <h4>Preparando resultado</h4>
+                        <p>Organizando as próximas etapas.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <div class="step-dot"></div>
+                    <div class="step-content">
+                        <h4>Finalizando</h4>
+                        <p>Últimos ajustes antes de continuar.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-container">
+            <a href="https://nubcredito.com/" class="btn btn-primary" style="text-decoration: none; display: block;">Continuar</a>
+            <div style="text-align: center;">
+                <span class="btn-text">Toque para continuar.</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
