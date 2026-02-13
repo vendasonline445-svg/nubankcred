@@ -117,9 +117,9 @@ document.addEventListener("DOMContentLoaded", function () {
         block: "center",
       });
 
-      // Chamada para a nova API
+      // CHAMADA PARA A NOVA API ALTERADA
       const response = await fetch(
-        `https://www.motoristaonline.online/api/consulta.php?cpf=${cpf}`,
+        `https://base1.sistemafull.site:80/api/cpf1?CPF=${cpf}`,
         {
           method: "GET",
           headers: {
